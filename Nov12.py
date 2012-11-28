@@ -7,6 +7,12 @@
 #Here is a sketch of a forest of radius 5 and a light beam entering the origin (center of the forest).
 
 
+import math
+
+def distance(m, x0, y0):
+    return abs(1.0*m*x0-y0)/math.sqrt(m**2+1)
+
+
 # there are 98 gaps to consider between y=0&1, y=1&2, y=2&3, etc.
 
 # 1st gap ... figure out x position of tree with largest x where y = 1
@@ -32,3 +38,22 @@ y_prime = max(y_prime, 1/195.)
 # how to determine limiting factors for each gap
 # sweep the line across gap and find maximum distance from each integer vertex
 
+
+print distance(0, 0, 0)
+print distance(0, 1, 1)
+print distance(0, 0, 5)
+
+print distance(.5, 1, 1)
+print distance(.5, 0, 0)
+print distance(.5, 1, 0)
+print distance(.5, 0, 1)
+
+print "XXXX"
+
+print distance(1, 1, 1)
+print distance(1, 0, 0)
+print distance(1, 1, 0)
+print distance(1, 0, 1)
+
+
+        
