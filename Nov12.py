@@ -9,51 +9,43 @@
 
 import math
 
+RADIUS = 5
+#RADIUS = 9801
+EPSILON = 0.00000000000001
+
 def distance(m, x0, y0):
-    return abs(1.0*m*x0-y0)/math.sqrt(m**2+1)
+    return abs(m*x0-y0)/math.sqrt(m**2+1)
+
+def circle_intercept(m):
+    x = math.sqrt(RADIUS**2/(m**2+1))
+    y = m*x
+    return (x,y)
+
+def points_of_interest(m):
+    poi = []
+    (x0,y0) = circle_intercept(m)
+    for x in range(1, int(x0+1)):    
+        y = m*x
+        if(x**2 + int(round(y))**2 <= RADIUS**2):
+            poi.append((x, int(round(y))))
+
+        if(x**2 + int(round(y+1))**2 <= RADIUS**2):
+            poi.append((x, int(round(y+1))))
+
+    return poi
 
 
-# there are 98 gaps to consider between y=0&1, y=1&2, y=2&3, etc.
+m = 0.0
+points = points_of_interest(m)
+orig = [abs(m*p[0]-p[1])/math.sqrt(m**2+1) for p in points]
+m=m+EPSILON
+adjust = [abs(m*p[0]-p[1])/math.sqrt(m**2+1) for p in points]
+diff = [a-o for a, o in zip(adjust, orig)]
+print orig
+print adjust
+print diff
+print points
 
-# 1st gap ... figure out x position of tree with largest x where y = 1
-# x**2 + y**2 = 9801
-x = int((9800)**0.5)
-
-# limiting factor is (1,0) and (98,1)
-
-# y = mx+b
-# y' = radius of tree
-# y' = m*1+0
-# 1-y' = m*98 + 0
-# y' = 1/99.
-y_prime = 1/99.
-m = y_prime
-
-# 2nd gap:
-# limiting factor is (97,1) and (98,1)
-# 1-y' = m * 97
-# 1+y' = m * 98
-y_prime = max(y_prime, 1/195.)
-
-# how to determine limiting factors for each gap
-# sweep the line across gap and find maximum distance from each integer vertex
-
-
-print distance(0, 0, 0)
-print distance(0, 1, 1)
-print distance(0, 0, 5)
-
-print distance(.5, 1, 1)
-print distance(.5, 0, 0)
-print distance(.5, 1, 0)
-print distance(.5, 0, 1)
-
-print "XXXX"
-
-print distance(1, 1, 1)
-print distance(1, 0, 0)
-print distance(1, 1, 0)
-print distance(1, 0, 1)
-
-
-        
+# need to find the smallest positive number
+point1 = points[diff.index(min(diff))]
+XX = [v>0 for v in diff]
