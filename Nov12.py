@@ -10,7 +10,7 @@
 import math
 
 RADIUS = 5
-#RADIUS = 9801
+RADIUS = 9801
 EPSILON = 0.00000000000001
 
 def distance(m, x0, y0):
@@ -41,11 +41,18 @@ orig = [abs(m*p[0]-p[1])/math.sqrt(m**2+1) for p in points]
 m=m+EPSILON
 adjust = [abs(m*p[0]-p[1])/math.sqrt(m**2+1) for p in points]
 diff = [a-o for a, o in zip(adjust, orig)]
-print orig
-print adjust
-print diff
-print points
+#print orig
+#print adjust
+#print diff
+#print points
 
 # need to find the smallest positive number
 point1 = points[diff.index(min(diff))]
-XX = [v>0 for v in diff]
+XX = [v<0 for v in diff]
+XX2 = [RADIUS*v2 for v2 in XX]
+XX3 = [v3+v4 for v3, v4 in zip(diff, XX2)]
+#print XX
+#print XX2
+#print XX3
+point2 = points[XX3.index(min(XX3))]
+print point1, point2
