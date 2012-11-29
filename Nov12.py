@@ -9,6 +9,7 @@
 
 import math
 import operator
+import sys
 
 RADIUS = 5
 #RADIUS = 9801
@@ -42,29 +43,34 @@ def max_tree_radius_slope(p0, p1):
 
 def max_tree_radius(p0, p1):
     m = max_tree_radius_slope(p0, p1)
-    print m, p0, distance(m, p0)
-    print m, p1, distance(m, p1)
     return distance(m, p1)
 
 
 m = 0.0
-points = points_of_interest(m)
-orig = [abs(m*p[0]-p[1])/math.sqrt(m**2+1) for p in points]
-m=m+EPSILON
-adjust = [abs(m*p[0]-p[1])/math.sqrt(m**2+1) for p in points]
-diff = [a-o for a, o in zip(adjust, orig)]
-#print orig
-#print adjust
-#print diff
-#print points
+current_max_radius = 0.0
+current_m = 0
+x = 0
+while(m<1):
+    points = points_of_interest(m)
+    orig = [abs(m*p[0]-p[1])/math.sqrt(m**2+1) for p in points]
+    m=m+EPSILON
+    adjust = [abs(m*p[0]-p[1])/math.sqrt(m**2+1) for p in points]
+    diff = [a-o for a, o in zip(adjust, orig)]
 
-min_index, min_value = min(enumerate(diff), key=operator.itemgetter(1))
-point1 = points[min_index]
+    min_index, min_value = min(enumerate(diff), key=operator.itemgetter(1))
+    point1 = points[min_index]
 
+    # need to find the smallest positive number
+    min_index, min_value = min(enumerate([(RADIUS*(v<0))+v for v in diff]), key=operator.itemgetter(1))
+    point2 = points[min_index]
 
-# need to find the smallest positive number
-min_index, min_value = min(enumerate([(RADIUS*(v<0))+v for v in diff]), key=operator.itemgetter(1))
-point2 = points[min_index]
-print point1, point2
-print max_tree_radius(point1, point2)
+    print point1, point2
+    
+    if(max_tree_radius(point1, point2) > current_max_radius):
+        current_max_radius = max_tree_radius(point1, point2)
+        current_m = max_tree_radius_slope(point1, point2)
 
+    m = float(point1[1])/float(point1[0])
+    x+=1
+    if x > 1:
+        sys.exit()
