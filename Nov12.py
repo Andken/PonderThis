@@ -25,18 +25,29 @@ def circle_intercept(m):
     y = m*x
     return (x,y)
 
+def within_circle(p):
+    return p[0]**2 + p[1]**2 <= RADIUS**2
+
 def points_of_interest(m):
-    poi = []
+    upper_poi = []
+    lower_poi = []
     (x0,y0) = circle_intercept(m)
-    for x in range(1, int(x0+1)):    
+    previous_y = 0
+    for x in range(1, int(x0+1)):
         y = m*x
-        if(x**2 + int(round(y))**2 <= RADIUS**2):
-            poi.append((x, int(round(y))))
 
-        if(x**2 + int(round(y+1))**2 <= RADIUS**2):
-            poi.append((x, int(round(y+1))))
+        if previous_y+1 < y:
+            previous_y = previous_y+1
 
-    return poi
+        if within_circle((x, previous_y+1)):
+            upper_poi.append((x, previous_y+1))
+
+        if within_circle((x, previous_y)):
+            lower_poi.append((x, previous_y))
+        
+        
+
+    return lower_poi, upper_poi
 
 def max_tree_radius_slope(p0, p1):
     return (float(p0[1])-float(p1[1]))/(float(p0[0])-float(p1[0]))
@@ -51,26 +62,33 @@ current_max_radius = 0.0
 current_m = 0
 x = 0
 while(m<1):
-    points = points_of_interest(m)
-    orig = [abs(m*p[0]-p[1])/math.sqrt(m**2+1) for p in points]
-    m=m+EPSILON
-    adjust = [abs(m*p[0]-p[1])/math.sqrt(m**2+1) for p in points]
-    diff = [a-o for a, o in zip(adjust, orig)]
+    lpoints, upoints = points_of_interest(m)
 
-    min_index, min_value = min(enumerate(diff), key=operator.itemgetter(1))
-    point1 = points[min_index]
+    print upoints
+    print lpoints
 
-    # need to find the smallest positive number
-    min_index, min_value = min(enumerate([(RADIUS*(v<0))+v for v in diff]), key=operator.itemgetter(1))
-    point2 = points[min_index]
+    sys.exit()
 
-    print point1, point2
-    
-    if(max_tree_radius(point1, point2) > current_max_radius):
-        current_max_radius = max_tree_radius(point1, point2)
-        current_m = max_tree_radius_slope(point1, point2)
 
-    m = float(point1[1])/float(point1[0])
-    x+=1
-    if x > 1:
-        sys.exit()
+#    orig = [abs(m*p[0]-p[1])/math.sqrt(m**2+1) for p in points]
+#    m=m+EPSILON
+#    adjust = [abs(m*p[0]-p[1])/math.sqrt(m**2+1) for p in points]
+#    diff = [a-o for a, o in zip(adjust, orig)]
+#
+#    min_index, min_value = min(enumerate(diff), key=operator.itemgetter(1))
+#    point1 = points[min_index]
+#
+#    # need to find the smallest positive number
+#    min_index, min_value = min(enumerate([(RADIUS*(v<0))+v for v in diff]), key=operator.itemgetter(1))
+#    point2 = points[min_index]
+#
+#    print point1, point2
+#    
+#    if(max_tree_radius(point1, point2) > current_max_radius):
+#        current_max_radius = max_tree_radius(point1, point2)
+#        current_m = max_tree_radius_slope(point1, point2)
+#
+#    m = float(point1[1])/float(point1[0])
+#    x+=1
+#    if x > 1:
+#        sys.exit()
