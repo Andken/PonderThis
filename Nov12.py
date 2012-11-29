@@ -8,13 +8,16 @@
 
 
 import math
+import operator
 
 RADIUS = 5
-RADIUS = 9801
+#RADIUS = 9801
 EPSILON = 0.00000000000001
 
-def distance(m, x0, y0):
-    return abs(m*x0-y0)/math.sqrt(m**2+1)
+
+
+def distance(m, p):
+    return abs(m*p[0]-p[1])/math.sqrt(m**2+1)
 
 def circle_intercept(m):
     x = math.sqrt(RADIUS**2/(m**2+1))
@@ -34,6 +37,15 @@ def points_of_interest(m):
 
     return poi
 
+def max_tree_radius_slope(p0, p1):
+    return (float(p0[1])-float(p1[1]))/(float(p0[0])-float(p1[0]))
+
+def max_tree_radius(p0, p1):
+    m = max_tree_radius_slope(p0, p1)
+    print m, p0, distance(m, p0)
+    print m, p1, distance(m, p1)
+    return distance(m, p1)
+
 
 m = 0.0
 points = points_of_interest(m)
@@ -46,13 +58,13 @@ diff = [a-o for a, o in zip(adjust, orig)]
 #print diff
 #print points
 
+min_index, min_value = min(enumerate(diff), key=operator.itemgetter(1))
+point1 = points[min_index]
+
+
 # need to find the smallest positive number
-point1 = points[diff.index(min(diff))]
-XX = [v<0 for v in diff]
-XX2 = [RADIUS*v2 for v2 in XX]
-XX3 = [v3+v4 for v3, v4 in zip(diff, XX2)]
-#print XX
-#print XX2
-#print XX3
-point2 = points[XX3.index(min(XX3))]
+min_index, min_value = min(enumerate([(RADIUS*(v<0))+v for v in diff]), key=operator.itemgetter(1))
+point2 = points[min_index]
 print point1, point2
+print max_tree_radius(point1, point2)
+
