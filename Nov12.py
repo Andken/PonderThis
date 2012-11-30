@@ -29,25 +29,26 @@ def circle_intercept(m):
 def within_circle(p):
     return p[0]**2 + p[1]**2 <= RADIUS**2
 
-def points_of_interest(m):
+def point_of_interest(m):
     upper_poi = []
     #    lower_poi = []
     (x0,y0) = circle_intercept(m)
     previous_y = 0
+    smallest_distance = 1
+    p_ret = (0,0)
     for x in range(1, int(x0+1)):
         y = m*x
 
         if previous_y+1 < y:
             previous_y = previous_y+1
 
+#        print "point: ", x, previous_y+1, within_circle((x, previous_y+1)), distance(m, (x, previous_y+1))
         if within_circle((x, previous_y+1)):
-            upper_poi.append((x, previous_y+1))
+            if distance(m+EPSILON, (x, previous_y+1)) < smallest_distance:
+                smallest_distance = distance(m+EPSILON, (x, previous_y+1))
+                p_ret = (x, previous_y+1)
 
-        #        if within_circle((x, previous_y)):
-        #            lower_poi.append((x, previous_y))
-        
-
-    return upper_poi
+    return p_ret
 
 def max_tree_radius_slope(p0, p1):
     return (float(p0[1])+float(p1[1]))/(float(p0[0])+float(p1[0]))
@@ -56,29 +57,18 @@ def max_tree_radius(p0, p1):
     m = max_tree_radius_slope(p0, p1)
     return distance(m, p1)
 
-def lowest_m_point(points):
-    m = 1
-    p_ret = (0,0)
-    for p in points:
-        if float(p[1])/float(p[0]) < m:
-            m = float(p[1])/float(p[0])
-            p_ret = p
-
-    return p_ret
-
 m = 0.0
-current_max_radius = 0.0
+current_radius = 0
 current_m = 0
 point = (1,0)
-x = 0
 while(m<1):
-    upoints = points_of_interest(m)
+    next_point = point_of_interest(m)
 
-    next_point = lowest_m_point(upoints)
-    print point, next_point, max_tree_radius(point, next_point), current_m
+    print point, next_point, max_tree_radius(point, next_point), current_radius, current_m
 
-    if max_tree_radius(point, next_point) > current_m:
-        current_m = max_tree_radius(point, next_point)
+    if max_tree_radius(point, next_point) > current_radius:
+        current_radius = max_tree_radius(point, next_point)
+        current_m = max_tree_radius_slope(point, next_point)
 
     point = next_point
     m = float(point[1])/float(point[0]) + EPSILON
