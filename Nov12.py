@@ -30,7 +30,7 @@ def within_circle(p):
 
 def points_of_interest(m):
     upper_poi = []
-    lower_poi = []
+    #    lower_poi = []
     (x0,y0) = circle_intercept(m)
     previous_y = 0
     for x in range(1, int(x0+1)):
@@ -42,12 +42,11 @@ def points_of_interest(m):
         if within_circle((x, previous_y+1)):
             upper_poi.append((x, previous_y+1))
 
-        if within_circle((x, previous_y)):
-            lower_poi.append((x, previous_y))
-        
+        #        if within_circle((x, previous_y)):
+        #            lower_poi.append((x, previous_y))
         
 
-    return lower_poi, upper_poi
+    return upper_poi
 
 def max_tree_radius_slope(p0, p1):
     return (float(p0[1])-float(p1[1]))/(float(p0[0])-float(p1[0]))
@@ -56,19 +55,33 @@ def max_tree_radius(p0, p1):
     m = max_tree_radius_slope(p0, p1)
     return distance(m, p1)
 
+def lowest_m_point(points):
+    m = 1
+    p_ret = (0,0)
+    for p in points:
+        if float(p[1])/float(p[0]) < m:
+            m = float(p[1])/float(p[0])
+            p_ret = p
+
+    return p_ret
 
 m = 0.0
 current_max_radius = 0.0
 current_m = 0
+point = (1,0)
 x = 0
 while(m<1):
-    lpoints, upoints = points_of_interest(m)
+    upoints = points_of_interest(m)
 
-    print upoints
-    print lpoints
+    next_point = lowest_m_point(upoints)
+    print point, next_point, max_tree_radius(point, next_point)
 
-    sys.exit()
-
+    point = next_point
+    m = float(point[1])/float(point[0])
+    
+    x += 1
+    if x > 2:
+        sys.exit()
 
 #    orig = [abs(m*p[0]-p[1])/math.sqrt(m**2+1) for p in points]
 #    m=m+EPSILON
