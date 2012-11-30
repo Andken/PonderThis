@@ -12,10 +12,11 @@ import operator
 import sys
 
 RADIUS = 5
-#RADIUS = 9801
+RADIUS = 9801
 EPSILON = 0.00000000000001
 
-
+def distance_to_origin(p):
+    return math.sqrt(p[0]**2 + p[1]**2)
 
 def distance(m, p):
     return abs(m*p[0]-p[1])/math.sqrt(m**2+1)
@@ -49,7 +50,7 @@ def points_of_interest(m):
     return upper_poi
 
 def max_tree_radius_slope(p0, p1):
-    return (float(p0[1])-float(p1[1]))/(float(p0[0])-float(p1[0]))
+    return (float(p0[1])+float(p1[1]))/(float(p0[0])+float(p1[0]))
 
 def max_tree_radius(p0, p1):
     m = max_tree_radius_slope(p0, p1)
@@ -74,14 +75,17 @@ while(m<1):
     upoints = points_of_interest(m)
 
     next_point = lowest_m_point(upoints)
-    print point, next_point, max_tree_radius(point, next_point)
+    print point, next_point, max_tree_radius(point, next_point), current_m
+
+    if max_tree_radius(point, next_point) > current_m:
+        current_m = max_tree_radius(point, next_point)
 
     point = next_point
     m = float(point[1])/float(point[0]) + EPSILON
     
-    print points_of_interest(m)
+#    print points_of_interest(m)
 
-    x += 1
+#    x += 1
 #    if x > 2:
 #        sys.exit()
 
