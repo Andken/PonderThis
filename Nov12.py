@@ -77,11 +77,13 @@ while(m<1):
     print point, next_point, max_tree_radius(point, next_point)
 
     point = next_point
-    m = float(point[1])/float(point[0])
+    m = float(point[1])/float(point[0]) + EPSILON
     
+    print points_of_interest(m)
+
     x += 1
-    if x > 2:
-        sys.exit()
+#    if x > 2:
+#        sys.exit()
 
 #    orig = [abs(m*p[0]-p[1])/math.sqrt(m**2+1) for p in points]
 #    m=m+EPSILON
