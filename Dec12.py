@@ -61,7 +61,13 @@ def printgrid(grid):
         print row
 
 def getNum(x,y):
-    high = 4 if (x == 0 or x == N-1 or y == 0 or y == N-1) else 5  
+
+    high = 5
+    if (x == 0 or x == N-1 or y == 0 or y == N-1):
+        high = 4
+        if (x == 0 or x == N-1) and (y == 0 or y == N-1):
+            high = 3
+
     return random.randint(1,high)
     
 def zerogrid(grid):
@@ -74,16 +80,98 @@ def pairs_range(limit):
         for i2 in range(limit):
             yield i1, i2
 
+def insert5(grid, x, y):
+    five_neighbors = set([])
+    num = 0
+    if not grid[x-1][y] == 0:
+        five_neighbors.add(grid[x-1][y])
+        num += 1
+    if not grid[x+1][y] == 0:
+        five_neighbors.add(grid[x+1][y])
+        num += 1
+    if not grid[x][y-1] == 0:
+        five_neighbors.add(grid[x][y-1])
+        num += 1
+    if not grid[x][y+1] == 0:
+        five_neighbors.add(grid[x][y+1])
+        num += 1
+    to_add = FIVE_SET-five_neighbors
+    if len(to_add) > (4-num):
+        return False
+
+    grid[x][y] = 5
+    while len(to_add) > 0:
+        n = random.sample(to_add, 1)[0]
+        to_add.remove(n)
+        if grid[x-1][y] == 0:
+            grid[x-1][y] = n
+            continue
+        if grid[x+1][y] == 0:
+            grid[x+1][y] = n
+            continue
+        if grid[x][y-1] == 0:
+            grid[x][y-1] = n
+            continue
+        if grid[x][y+1] == 0:
+            grid[x][y+1] = n
+            continue
+
+    return True
+                
+def insert4(grid, x, y):
+    four_neighbors = set([])
+    directions = ['L', 'R', 'U', 'D']
+    if x > 0:
+        if not grid[x-1][y] == 0:
+            four_neighbors.add(grid[x-1][y])
+            directions.remove('L')
+    else:
+        directions.remove('L')
+    if x < N-1:
+        if not grid[x+1][y] == 0:
+            four_neighbors.add(grid[x+1][y])
+            directions.remove('R')
+    else:
+        directions.remove('R')
+    if y > 0:
+        if not grid[x][y-1] == 0:
+            four_neighbors.add(grid[x][y-1])
+            directions.remove('U')
+    else:
+        directions.remove('U')
+    if y < N-1:
+        if not grid[x][y+1] == 0:
+            four_neighbors.add(grid[x][y+1])
+            directions.remove('D')
+    else:
+        directions.remove('D')
+
+    to_add = FOUR_SET-four_neighbors
+
+    if len(to_add) > len(directions):
+        return False
+    grid[x][y] = 4
+    while len(to_add) > 0:
+        n = random.sample(to_add, 1)[0]
+        to_add.remove(n)
+
+        pos = random.sample(directions, 1)[0]
+        directions.remove(pos)
+
+        if pos == 'L':
+            grid[x-1][y] = n
+        elif pos == 'R':
+            grid[x+1][y] = n
+        elif pos == 'U':
+            grid[x][y-1] = n
+        else:
+            grid[x][y+1] = n
+    
+    return True
+
+
 grid = [[2,3,5],[3,3,3],[5,1,1]]
 #grid = [[2,2,1],[2,2,1],[1,2,1]]
-
-#init_list = []
-#for x in range(N):
-#    for y in range(N):
-#        init_list.append(y)
-
-#print init_list
-#sys.exit()
 
 grid = []
 for x in range(N):
@@ -94,10 +182,26 @@ for x in range(N):
     grid.append(row)
 
 
+#### test code
+while(True):
+    print "========\n== NEW ==\n========="
+    zerogrid(grid)
+    printgrid(grid)
+    grid[0][0] = 0
+    grid[2][0] = 1
+    grid[1][1] = 2
+    print insert4(grid, 1, 0)
+    printgrid(grid)
+
+sys.exit()
+#### test code
+
+
+
 
 go = False
 sum = 0 
-while(not go or sum < SUM):
+while(not go):
     zerogrid(grid)
     sum = 0
     for x, y in pairs_range(N):
@@ -105,65 +209,39 @@ while(not go or sum < SUM):
             continue
 
         r = getNum(x, y)
-        grid[x][y] = r
         if r == 5:
-            five_neighbors = set([])
-            num = 0
-            if not grid[x-1][y] == 0:
-                five_neighbors.add(grid[x-1][y])
-                num += 1
-            if not grid[x+1][y] == 0:
-                five_neighbors.add(grid[x+1][y])
-                num += 1
-            if not grid[x][y-1] == 0:
-                five_neighbors.add(grid[x][y-1])
-                num += 1
-            if not grid[x][y+1] == 0:
-                five_neighbors.add(grid[x][y+1])
-                num += 1
-            to_add = FIVE_SET-five_neighbors
-            if len(to_add) > (4-num):
-                break
-            while len(to_add) > 0:
-                n = random.sample(to_add, 1)[0]
-                to_add.remove(n)
-                if grid[x-1][y] == 0:
-                    grid[x-1][y] = n
-                    continue
-                if grid[x+1][y] == 0:
-                    grid[x+1][y] = n
-                    continue
-                if grid[x][y-1] == 0:
-                    grid[x][y-1] = n
-                    continue
-                if grid[x][y+1] == 0:
-                    grid[x][y+1] = n
-                    continue
-                
+            insert5(grid, x, y)
+        else:
+            grid[x][y] = r
 
-#        if r == 4:
-#            four_neighbors = set([])
-#            num = 0
-#            if not grid[x-1][y] == 0:
-#                four_neighbors.add(grid[x-1][y])
-#                num += 1
-#            if not grid[x+1][y] == 0:
-#                four_neighbors.add(grid[x+1][y])
-#                num += 1
-#            if not grid[x][y-1] == 0:
-#                four_neighbors.add(grid[x][y-1])
-#                num += 1
-#            if not grid[x][y+1] == 0:
-#                four_neighbors.add(grid[x][y+1])
-#                num += 1
-#            to_add = FOUR_SET-four_neighbors
-#            # use 4 because that's the amout that are available
-#            if len(to_add) > (4-num):
-#                break
+ #       if r == 4:
+ #           four_neighbors = set([])
+ #           num = 0
+ #           if x > 0:
+ #               num += 1
+ #               if not grid[x-1][y] == 0:
+ #                   four_neighbors.add(grid[x-1][y])
+ #           if x < N-1:
+ #               num += 1
+ #               if not grid[x+1][y] == 0:
+ #                   four_neighbors.add(grid[x+1][y])
+ #           if y > 0:
+ #               num += 1
+ #               if not grid[x][y-1] == 0:
+ #                   four_neighbors.add(grid[x][y-1])
+ #           if y < N-1:
+ #               num += 1
+ #               if not grid[x][y+1] == 0:
+ #                   four_neighbors.add(grid[x][y+1])
+ #           to_add = FOUR_SET-four_neighbors
+ #           # use 4 because that's the amout that are available
+ #           if len(to_add) > (4-num):
+ #               break
                 
 
     
-    if sumgrid(grid) >= SUM:
+    if sumgrid(grid) >= SUM or True:
         printgrid(grid)
         go = isGood(grid)
 
+printgrid(grid)
