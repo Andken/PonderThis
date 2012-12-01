@@ -21,6 +21,10 @@ THREE_SET = set([1,2])
 TWO_SET = set([1])
 ONE_SET = set([])
 
+NUM_SET5 = [1,2,2,3,3,3,4,4,4,4,5,5,5,5,5]
+NUM_SET4 = [1,2,2,3,3,3,4,4,4,4]
+NUM_SET3 = [1,2,2,3,3,3]
+
 WORKING_SET = [set([]), ONE_SET, TWO_SET, THREE_SET, FOUR_SET, FIVE_SET]
 
 def isGood(grid):
@@ -59,20 +63,19 @@ def sumgrid(grid):
     return sum
 
 def printgrid(grid):
-    print "============="
-    print sumgrid(grid)
+#    print "============="
+#    print sumgrid(grid)
     for row in grid:
         print row
 
 def getNum(x,y):
-
-    high = 5
     if (x == 0 or x == N-1 or y == 0 or y == N-1):
-        high = 4
         if (x == 0 or x == N-1) and (y == 0 or y == N-1):
-            high = 3
-
-    return random.randint(1,high)
+            return random.choice(NUM_SET3)
+        else:
+            return random.choice(NUM_SET4)
+    else:
+        return random.choice(NUM_SET5)
     
 def zerogrid(grid):
     for x in range(N):
@@ -124,14 +127,18 @@ def insert(grid, n, x, y):
         pos = random.sample(directions, 1)[0]
         directions.remove(pos)
 
+        result = True
         if pos == 'L':
-            grid[x-1][y] = n
+            result = insert(grid, n, x-1, y)
         elif pos == 'R':
-            grid[x+1][y] = n
+            result = insert(grid, n, x+1, y)
         elif pos == 'U':
-            grid[x][y-1] = n
+            result = insert(grid, n, x, y-1)
         else:
-            grid[x][y+1] = n
+            result = insert(grid, n, x, y+1)
+
+        if not result:
+            return False
     
     return True
 
@@ -153,12 +160,14 @@ for x in range(N):
 #    print "========\n== NEW ==\n========="
 #    zerogrid(grid)
 #    printgrid(grid)
-#    grid[0][1] = 3
-#    grid[1][0] = 1
-#    grid[1][2] = 0
-#    grid[2][1] = 0
-#    print insert(grid, 3, 1, 1)
+#    grid[0][1] = 0
+#    grid[1][0] = 2
+#    grid[1][2] = 1
+#    grid[2][1] = 4
+#    print insert(grid, 4, 1, 1)
 #    printgrid(grid)
+
+#    print getNum(1,1)
 
 #sys.exit()
 #### test code
