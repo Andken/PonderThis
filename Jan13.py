@@ -41,6 +41,8 @@ for p in list(itertools.permutations(letters, 3)):
     else:
         print "nope %c%c%c" % (p[0], p[1], p[2])
 
+# first check off the ones that exist in the first pass, then modify based on first one that doesn't match...repeat
+
 
 # 4896 different permutations must match
 # 18 letters * 13 permutations = 234 ... probably useless
