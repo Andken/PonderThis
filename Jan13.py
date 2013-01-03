@@ -41,15 +41,38 @@ def swap(s, i1, i2):
 
 def getNextWorking(next_answer, working):
     # figure out which letter is off
+
+    i0 = working.index(next_answer[0])
+    i1 = working.index(next_answer[1])
+    i2 = working.index(next_answer[2])
+
+    print working, next_answer, i0, i1, i2
+
+    # six permutations of 0 1 2
+    # 0 1 2 --- shouldn't be in this function
+    # 0 2 1 --- swap last two
+    # 1 0 2 --- swap first two
+    # 1 2 0 --- rotate right
+    # 2 0 1 --- rotate left
+    # 2 1 0 --- swap first and last
     
-    # 1st two are corrext
 
+    if i0<i1 and i0<i2 and i1>i2:
+        return swap(working, i1, i2)
+    elif i0>i1 and i0<i2 and i1<i2:
+        return swap(working, i0, i1)
+    elif i0<i1 and i0>i2 and i1>i2:
+        while not isSubsequence(next_answer, working):
+            working = rotateStringRight(working)
+        return working
+    elif i0>i1 and i0>i2 and i1<i2:
+        while not isSubsequence(next_answer, working):
+            working = rotateStringLeft(working)
+        return working
+    elif i0>i1 and i0>i2 and i1>i2:
+        return swap(working, i0, i2)
 
-    # last 2 are correct
-
-    # all three are wrong
-
-
+    print "problem", next_answer, working, i0, i1, i2
     return working
 
 
@@ -72,15 +95,22 @@ permutes_of_answer.append(letters)
 
 answers = dict(zip(list(itertools.permutations(letters, 3)), [False]*len(list(itertools.permutations(letters, 3)))))
 
+
+
 working = letters
 
+for p in list(itertools.permutations(letters, 3)):
+    if isSubsequence(p, working):
+        answers[p] = True
+
 while not done(answers):
+    next_answer = getNextFalseAnswer(answers)
+    working = getNextWorking(next_answer, working)
+
     for p in list(itertools.permutations(letters, 3)):
         if isSubsequence(p, working):
             answers[p] = True
-    
-    next_answer = nextFalseAnswer(answer)
-    working = getNextWorking(next_answer, working)
+
 
 # first check off the ones that exist in the first pass, then modify based on first one that doesn't match...repeat
 
