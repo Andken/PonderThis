@@ -14,6 +14,45 @@
 
 import itertools
 
+def done(answers):
+    for k in answers.iterkeys():
+        if not answers[k]: 
+            return False
+    return True
+
+def getNextFalseAnswer(answers):
+    for k in answers.iterkeys():
+        if not answers[k]: 
+            return k
+    return ""
+
+def rotateStringRight(s):
+    return s[1:]+s[0]
+    
+def rotateStringLeft(s):
+    length = len(s)
+    return s[length-1] + s[0:length-1]
+
+def swap(s, i1, i2):
+    new = list(s)
+    new[i1] = s[i2]
+    new[i2] = s[i1]
+    return ''.join(new)
+
+def getNextWorking(next_answer, working):
+    # figure out which letter is off
+    
+    # 1st two are corrext
+
+
+    # last 2 are correct
+
+    # all three are wrong
+
+
+    return working
+
+
 def isSubsequence(sub, str):
     start_index = 0
     for letter in sub:
@@ -23,9 +62,8 @@ def isSubsequence(sub, str):
     return True
         
 
-#letters = ['E', 'I', 'S', 'H']
-#letters = ['A', 'B', 'C', 'E', 'F', 'H', 'I', 'J', 'L', 'M', 'N', 'P', 'Q', 'T', 'V', 'X', 'Y', 'Z']
-letters = "ABCEFHIJLMNPQTVXYZ"
+letters = "EISH"
+#letters = "ABCEFHIJLMNPQTVXYZ"
 combos_of_three_letters = list(itertools.combinations(letters, 3))
 permutes_of_three_letters = list(itertools.permutations(letters, 3))
 
@@ -34,12 +72,15 @@ permutes_of_answer.append(letters)
 
 answers = dict(zip(list(itertools.permutations(letters, 3)), [False]*len(list(itertools.permutations(letters, 3)))))
 
+working = letters
 
-for p in list(itertools.permutations(letters, 3)):
-    if isSubsequence(p, letters):
-        print "%c%c%c" % (p[0], p[1], p[2])
-    else:
-        print "nope %c%c%c" % (p[0], p[1], p[2])
+while not done(answers):
+    for p in list(itertools.permutations(letters, 3)):
+        if isSubsequence(p, working):
+            answers[p] = True
+    
+    next_answer = nextFalseAnswer(answer)
+    working = getNextWorking(next_answer, working)
 
 # first check off the ones that exist in the first pass, then modify based on first one that doesn't match...repeat
 
