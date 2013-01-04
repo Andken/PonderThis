@@ -13,6 +13,7 @@
 # A bonus question: What is special about this set of letters?
 
 import itertools
+import sys
 
 def done(answers):
     for k in answers.iterkeys():
@@ -48,7 +49,7 @@ def swap(s, i1, i2):
     return ''.join(new)
 
 def getNextWorking(next_answer, working):
-    print " gnw: ", next_answer, working
+#    print " gnw: ", next_answer, working
     # figure out which letter is off
 
     i0 = working.index(next_answer[0])
@@ -56,7 +57,7 @@ def getNextWorking(next_answer, working):
     i2 = working.index(next_answer[2])
 
     # six permutations of 0 1 2
-    # 0 1 2 --- shouldn't be in this function
+    # 0 1 2 --- already good!
     # 0 2 1 --- swap last two
     # 1 0 2 --- swap first two
     # 1 2 0 --- rotate right
@@ -79,7 +80,7 @@ def getNextWorking(next_answer, working):
     elif i0>i1 and i0>i2 and i1>i2:
         return swap(working, i0, i2)
 
-    print "problem", next_answer, working, i0, i1, i2
+    # this one works, just return it
     return working
 
 
@@ -93,13 +94,13 @@ def isSubsequence(sub, str):
         
 def checkWorkingAnswers(working_answers, working):
     for wa in working_answers:
-        print "  $$ checking ", wa, working
+#        print "  $$ checking ", wa, working
         if not isSubsequence(wa, working):
             return False
     return True
 
-letters = "EISH"
-#letters = "ABCEFHIJLMNPQTVXYZ"
+#letters = "EISH"
+letters = "ABCEFHIJLMNPQTVXYZ"
 combos_of_three_letters = list(itertools.combinations(letters, 3))
 permutes_of_three_letters = list(itertools.permutations(letters, 3))
 
@@ -127,33 +128,58 @@ permutes.append(working)
 
 
 while not done(answers):
-    print "# permutes: ", len(permutes)
+#    print "# permutes: ", len(permutes)
     working_answers = []
     next_answer = ('X', 'X', 'X')
     next_answer = getNextFalseAnswer(answers, next_answer)
 
+    continuation = False
     while not next_answer == ('Z', 'Z', 'Z'):
-        print "next_answer: ", next_answer
+#        print "next_answer: ", next_answer
         new_working = getNextWorking(next_answer, working)
-        print " getNextWorking returned: ", new_working
+#        print " getNextWorking returned: ", new_working
         if checkWorkingAnswers(working_answers, new_working):
-            print " appending"
+#            print " appending"
             working_answers.append(next_answer)
             working = new_working
+            continuation = True
     
         next_answer = getNextFalseAnswer(answers, next_answer)
+        if next_answer == ('Z', 'Z', 'Z') and continuation:
+            continuation = False
+            next_answer = ('X', 'X', 'X')
     
     for p in list(itertools.permutations(letters, 3)):
         if isSubsequence(p, working):
             answers[p] = True
 
-    print "   Adding: ", working
+#    print "   Adding: ", working
     permutes.append(working)
 
 # first check off the ones that exist in the first pass, then modify based on first one that doesn't match...repeat
 
 
-print permutes
+answers2 = dict(zip(list(itertools.permutations(letters, 3)), [0]*len(list(itertools.permutations(letters, 3)))))
+
+
+for p in permutes:
+    for k in answers2.iterkeys():
+        if isSubsequence(k, p):
+            answers2[k] += 1
+
+
+
+for p in permutes:
+    print p
+    ss = 0
+    for k in answers2.iterkeys():
+        if isSubsequence(k, p):
+            if answers2[k] == 1:
+                print " ", k, answers2[k]
+            ss += 1
+    print p, ss
+
+            
 
 # 4896 different permutations must match
 # 18 letters * 13 permutations = 234 ... probably useless
