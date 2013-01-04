@@ -20,11 +20,19 @@ def done(answers):
             return False
     return True
 
-def getNextFalseAnswer(answers):
+def getNextFalseAnswer(answers, key):
+    passed_key = False
+    if key == ('X', 'X', 'X'):
+        passed_key = True
+
     for k in answers.iterkeys():
-        if not answers[k]: 
-            return k
-    return ""
+        if passed_key:
+            if not answers[k]: 
+                return k
+        else:
+            if k == key:
+                passed_key = True
+    return ('Z', 'Z', 'Z')
 
 def rotateStringRight(s):
     return s[1:]+s[0]
@@ -40,13 +48,12 @@ def swap(s, i1, i2):
     return ''.join(new)
 
 def getNextWorking(next_answer, working):
+    print " gnw: ", next_answer, working
     # figure out which letter is off
 
     i0 = working.index(next_answer[0])
     i1 = working.index(next_answer[1])
     i2 = working.index(next_answer[2])
-
-    print working, next_answer, i0, i1, i2
 
     # six permutations of 0 1 2
     # 0 1 2 --- shouldn't be in this function
@@ -84,6 +91,12 @@ def isSubsequence(sub, str):
             return False
     return True
         
+def checkWorkingAnswers(working_answers, working):
+    for wa in working_answers:
+        print "  $$ checking ", wa, working
+        if not isSubsequence(wa, working):
+            return False
+    return True
 
 letters = "EISH"
 #letters = "ABCEFHIJLMNPQTVXYZ"
@@ -95,25 +108,52 @@ permutes_of_answer.append(letters)
 
 answers = dict(zip(list(itertools.permutations(letters, 3)), [False]*len(list(itertools.permutations(letters, 3)))))
 
-
-
 working = letters
+permutes = []
 
 for p in list(itertools.permutations(letters, 3)):
     if isSubsequence(p, working):
         answers[p] = True
 
-while not done(answers):
-    next_answer = getNextFalseAnswer(answers)
-    working = getNextWorking(next_answer, working)
+permutes.append(working)
 
+#while not next_answer == "":
+#    next_answer = getNextFalseAnswer(answers, next_answer)
+#    print next_answer
+
+#for k in answers.iterkeys():
+#    if answers[k]:
+#        print k
+
+
+while not done(answers):
+    print "# permutes: ", len(permutes)
+    working_answers = []
+    next_answer = ('X', 'X', 'X')
+    next_answer = getNextFalseAnswer(answers, next_answer)
+
+    while not next_answer == ('Z', 'Z', 'Z'):
+        print "next_answer: ", next_answer
+        new_working = getNextWorking(next_answer, working)
+        print " getNextWorking returned: ", new_working
+        if checkWorkingAnswers(working_answers, new_working):
+            print " appending"
+            working_answers.append(next_answer)
+            working = new_working
+    
+        next_answer = getNextFalseAnswer(answers, next_answer)
+    
     for p in list(itertools.permutations(letters, 3)):
         if isSubsequence(p, working):
             answers[p] = True
 
+    print "   Adding: ", working
+    permutes.append(working)
 
 # first check off the ones that exist in the first pass, then modify based on first one that doesn't match...repeat
 
+
+print permutes
 
 # 4896 different permutations must match
 # 18 letters * 13 permutations = 234 ... probably useless
